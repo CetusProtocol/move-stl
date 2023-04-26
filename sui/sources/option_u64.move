@@ -47,14 +47,7 @@ module move_stl::option_u64 {
     }
 
     public fun contains(opt: &OptionU64, e_ref: u64): bool {
-        if (opt.is_none) {
-            return false
-        };
-        (opt.v == e_ref)
-    }
-
-    public fun is_some_and_eq(opt: &OptionU64, v: u64): bool {
-        ((!opt.is_none) && (opt.v == v))
+        ((!opt.is_none) && (opt.v == e_ref))
     }
 
     public fun is_some_and_lte(opt: &OptionU64, v: u64): bool {

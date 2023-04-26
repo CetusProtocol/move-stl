@@ -28,11 +28,11 @@ module move_stl::skip_list {
         random: Random,
 
         /// The table for store node.
-        inner: table_with_length::TableWithLength<u64, SkipListNode<V>>
+        inner: table_with_length::TableWithLength<u64, Node<V>>
     }
 
     /// The node of skip list.
-    struct SkipListNode<V: store> has store {
+    struct Node<V: store> has store {
         /// The score of node.
         score: u64,
         /// The next node score of node's each level.
@@ -44,14 +44,14 @@ module move_stl::skip_list {
     }
 
     /// Create a new empty skip list.
-    public fun new<V: store>(max_level: u64, list_p: u64): SkipList<V> {
+    public fun new<V: store>(max_level: u64, list_p: u64, seed: u64): SkipList<V> {
         let list = SkipList<V> {
             head: vector::empty(),
             tail: none(),
             level: 0,
             max_level,
             list_p,
-            random: random::new(),
+            random: random::new(seed),
             inner: table_with_length::new()
         };
         random::seed(&mut list.random, timestamp::now_microseconds());
@@ -118,13 +118,13 @@ module move_stl::skip_list {
 
     /// Acquire an immutable reference to the `score` node of the skip list `list`.
     /// Aborts if node not exist.
-    public fun borrow_node<V: store>(list: &SkipList<V>, score: u64): &SkipListNode<V> {
+    public fun borrow_node<V: store>(list: &SkipList<V>, score: u64): &Node<V> {
         table_with_length::borrow(&list.inner, score)
     }
 
     /// Return a mutable reference to the `score` node in the skip list `list`.
     /// Aborts if node is not exist.
-    public fun borrow_mut_node<V: store>(list: &mut SkipList<V>, score: u64): &mut SkipListNode<V> {
+    public fun borrow_mut_node<V: store>(list: &mut SkipList<V>, score: u64): &mut Node<V> {
         table_with_length::borrow_mut(&mut list.inner, score)
     }
 
@@ -141,22 +141,22 @@ module move_stl::skip_list {
     }
 
     /// Return the next score of the node.
-    public fun next_score<V: store>(node: &SkipListNode<V>): OptionU64 {
+    public fun next_score<V: store>(node: &Node<V>): OptionU64 {
         *vector::borrow(&node.nexts, 0)
     }
 
     /// Return the prev score of the node.
-    public fun prev_score<V: store>(node: &SkipListNode<V>): OptionU64 {
+    public fun prev_score<V: store>(node: &Node<V>): OptionU64 {
         node.prev
     }
 
     /// Return the immutable reference to the ndoe's value.
-    public fun borrow_value<V: store>(node: &SkipListNode<V>): &V {
+    public fun borrow_value<V: store>(node: &Node<V>): &V {
         &node.value
     }
 
     /// Return the mutable reference to the ndoe's value.
-    public fun borrow_mut_value<V: store>(node: &mut SkipListNode<V>): &mut V {
+    public fun borrow_mut_value<V: store>(node: &mut Node<V>): &mut V {
         &mut node.value
     }
 
@@ -301,7 +301,7 @@ module move_stl::skip_list {
     }
 
     /// Create a new skip list node
-    fun create_node<V: store>(list: &mut SkipList<V>, score: u64, value: V): (u64, SkipListNode<V>) {
+    fun create_node<V: store>(list: &mut SkipList<V>, score: u64, value: V): (u64, Node<V>) {
         // Generate rand level
         random::seed(&mut list.random, timestamp::now_microseconds());
         let seed = random::rand(&mut list.random);
@@ -314,7 +314,7 @@ module move_stl::skip_list {
 
         (
             level,
-            SkipListNode<V> {
+            Node<V> {
                 score,
                 nexts: vector::empty(),
                 prev: none(),
@@ -323,8 +323,8 @@ module move_stl::skip_list {
         )
     }
 
-    fun drop_node<V: store>(node: SkipListNode<V>): V {
-        let SkipListNode {
+    fun drop_node<V: store>(node: Node<V>): V {
+        let Node {
             score: _,
             nexts: _,
             prev: _,
@@ -444,7 +444,7 @@ module move_stl::skip_list {
         account: &signer
     ) {
         timestamp::set_time_has_started_for_testing(apt);
-        let list = new<u256>(16, 2);
+        let list = new<u256>(16, 2, 0);
         check_skip_list(&list);
         move_to(account, list);
     }
@@ -458,11 +458,11 @@ module move_stl::skip_list {
         account: &signer
     ) {
         timestamp::set_time_has_started_for_testing(apt);
-        let list = new<u256>(16, 2);
+        let list = new<u256>(16, 2, 0);
         let n = 0;
         while (n < 10) {
             let (_, node) = create_node(&mut list, n, 0);
-            let SkipListNode{score:_, value:_, nexts:_, prev:_} = node;
+            let Node{score:_, value:_, nexts:_, prev:_} = node;
             n = n + 1;
         };
         check_skip_list(&list);
@@ -471,7 +471,7 @@ module move_stl::skip_list {
 
     #[test_only]
     fun add_node_for_test<V: store + copy + drop>(list: &mut SkipList<V>, size: u64, seed: u64, value: V) {
-        let random = random::new();
+        let random = random::new(seed);
         random::seed(&mut random, seed);
         let n = 0;
         while (n < size) {
@@ -489,7 +489,7 @@ module move_stl::skip_list {
     fun new_list_for_test<V: store + copy + drop>(
         account: &signer, max_leveL: u64, list_p: u64, size: u64, seed: u64, value: V
     ) {
-        let list = new<V>(max_leveL, list_p);
+        let list = new<V>(max_leveL, list_p, 0);
         add_node_for_test(&mut list, size, seed, value);
         move_to(account, list)
     }
@@ -515,7 +515,7 @@ module move_stl::skip_list {
         account: &signer,
     ) {
         timestamp::set_time_has_started_for_testing(apt);
-        let list = new<u256>(16, 2);
+        let list = new<u256>(16, 2, 0);
         let n = 0;
         while (n < 1000) {
             insert(&mut list, 0 + n, 0);
@@ -589,7 +589,7 @@ module move_stl::skip_list {
         timestamp::set_time_has_started_for_testing(apt);
         new_list_for_test<u256>(account, 16, 2, 1000, 12345, 0);
         let list = borrow_global_mut<SkipList<u256>>(signer::address_of(account));
-        let random = random::new();
+        let random = random::new(12345);
         random::seed(&mut random, 12345);
         let n = 0;
         while (n < 100) {
