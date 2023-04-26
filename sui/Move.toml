@@ -1,13 +1,13 @@
-# localnet
-# ----------------------
+# testnet
+# ------------------------
 [package]
 name = "MoveSTL"
 version = "0.0.1"
-published-at =  "0x945a3069a2dc9c3f7ef9d5ceae2ae65dcc18d04ce54ae42a6754cf9952cae945" 
+published-at =  "0xd28cb044bb5c2575e53f55eba417a27770ee1a96fc7b0186ae862b79a4e11d98" 
 
 [dependencies]
 Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "testnet-0.32.0" }
 
 [addresses]
 sui =  "0x2"
-move_stl =  "0x30f465cbade22066be533cb55b830751c1f7b7e56ce616e1b2a60c508ec156b5"
+move_stl =  "0x877115ff36a32e050644e73808be1bd5ea4aa79fc6254f6bcda99dc3ca40ccad"
