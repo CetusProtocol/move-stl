@@ -264,6 +264,9 @@ module move_stl::skip_list {
 
     /// Find the nearest score. 1. score, 2. prev, 3. next
     fun find<V: store>(list: &SkipList<V>, score: u64): OptionU64 {
+        if (list.size == 0) {
+            return none()
+        };
         let (l, nexts,current_score) = (list.level, &list.head, none());
         while (l > 0) {
             let opt_next_score = *vector::borrow(nexts, l - 1);
@@ -347,6 +350,7 @@ module move_stl::skip_list {
     use std::debug;
 
     #[test_only]
+    #[allow(unused_function)]
     fun print_skip_list<V: store>(list: &SkipList<V>) {
         debug::print(list);
         if (length(list) == 0) {
@@ -627,4 +631,27 @@ module move_stl::skip_list {
 
         transfer::transfer(list, tx_context::sender(ctx));
     }
+
+    #[test]
+    fun test_find_in_empty_list() {
+        let ctx = &mut tx_context::dummy();
+        let list = new<u256>(16, 2, 1234, ctx);
+        let opt_score = find(&list, 1000);
+        assert!(is_none(&opt_score), 0);
+
+        let opt_score = find_prev(&list, 1000, true);
+        assert!(is_none(&opt_score), 0);
+
+        let opt_score = find_prev(&list, 1000, false);
+        assert!(is_none(&opt_score), 0);
+
+        let opt_score = find_next(&list, 1000, true);
+        assert!(is_none(&opt_score), 0);
+
+        let opt_score = find_next(&list, 1000, false);
+        assert!(is_none(&opt_score), 0);
+
+        transfer::transfer(list, tx_context::sender(ctx));
+    }
+
 }
