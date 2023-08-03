@@ -259,6 +259,9 @@ module move_stl::skip_list {
 
     /// Find the nearest score. 1. score, 2. prev, 3. next
     fun find<V: store>(list: &SkipList<V>, score: u64): OptionU64 {
+        if (is_empty(list)) {
+            return none()
+        };
         let (l, nexts,current_score) = (list.level, &list.head, none());
         while (l > 0) {
             let opt_next_score = *vector::borrow(nexts, l - 1);
