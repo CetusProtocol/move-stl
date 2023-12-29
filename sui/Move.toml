@@ -3,10 +3,10 @@
 [package]
 name = "MoveSTL"
 version = "1.1.0"
-published-at =  "0x4410e3d48a35776bd1c794b903e2dcd33649bef14ebce30c567f3542a5a47212" 
+published-at =  "0x29c38705ecd5be459f780488d26779f5bd968f606f9749b8c57ebb8724f2b8cc" 
 
 [dependencies]
 Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet-v1.15.1" }
 
 [addresses]
-move_stl =  "0xfc127e3f9318fc874f94e464b1ee06ec01da31ca85479b8ebd3fa068f11a5b7d"
+move_stl =  "0x29c38705ecd5be459f780488d26779f5bd968f606f9749b8c57ebb8724f2b8cc"
