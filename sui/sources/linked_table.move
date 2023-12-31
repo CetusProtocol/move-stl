@@ -182,7 +182,7 @@ module move_stl::linked_table {
     #[test_only]
     use sui::tx_context;
     #[test_only]
-    use sui::transfer::transfer;
+    use sui::transfer;
 
     #[test]
     fun test_table_new() {
@@ -195,6 +195,7 @@ module move_stl::linked_table {
     }
 
     #[test]
+    #[lint_allow(self_transfer)]
     fun test_table_push_front() {
         let ctx = &mut tx_context::dummy();
         let table = new<u64, u256>(ctx);
@@ -227,10 +228,11 @@ module move_stl::linked_table {
         assert!(is_none(&node_3.prev), 0);
         assert!((is_some(&node_3.next) && (*option::borrow(&node_3.next) == 2)), 0);
 
-        transfer(table, tx_context::sender(ctx));
+        transfer::transfer(table, tx_context::sender(ctx));
     }
 
     #[test]
+    #[lint_allow(self_transfer)]
     fun test_table_push_back() {
         let ctx = &mut tx_context::dummy();
         let table = new<u64, u256>(ctx);
@@ -263,10 +265,11 @@ module move_stl::linked_table {
         assert!((is_some(&node_3.prev) && (*option::borrow(&node_3.prev) == 2)), 0);
         assert!(is_none(&node_3.next), 0);
 
-        transfer(table, tx_context::sender(ctx));
+        transfer::transfer(table, tx_context::sender(ctx));
     }
 
     #[test]
+    #[lint_allow(self_transfer)]
     fun test_table_remove() {
         let ctx = &mut tx_context::dummy();
         let table = new<u64, u256>(ctx);
@@ -317,10 +320,11 @@ module move_stl::linked_table {
 
         assert!(length(&table) == 6, 0);
 
-        transfer(table, tx_context::sender(ctx));
+        transfer::transfer(table, tx_context::sender(ctx));
     }
 
     #[test]
+    #[lint_allow(self_transfer)]
     fun test_table_insert_before() {
         let ctx = &mut tx_context::dummy();
         let table = new<u64, u256>(ctx);
@@ -369,10 +373,11 @@ module move_stl::linked_table {
         assert!(*option::borrow(&table.head) == 1, 0);
         assert!(*option::borrow(&table.tail) == 10, 0);
 
-        transfer(table, tx_context::sender(ctx));
+        transfer::transfer(table, tx_context::sender(ctx));
     }
 
     #[test]
+    #[lint_allow(self_transfer)]
     fun test_table_insert_after() {
         let ctx = &mut tx_context::dummy();
         let table = new<u64, u256>(ctx);
@@ -424,10 +429,11 @@ module move_stl::linked_table {
         assert!(*option::borrow(&table.head) == 2, 0);
         assert!(*option::borrow(&table.tail) == 11, 0);
 
-        transfer(table, tx_context::sender(ctx));
+        transfer::transfer(table, tx_context::sender(ctx));
     }
 
     #[test]
+    #[lint_allow(self_transfer)]
     fun test_table_push_back_bench() {
         let ctx = &mut tx_context::dummy();
         let table = new<u64, u256>(ctx);
@@ -436,10 +442,11 @@ module move_stl::linked_table {
             push_back(&mut table, n, (n as u256));
             n = n + 1;
         };
-        transfer(table, tx_context::sender(ctx));
+        transfer::transfer(table, tx_context::sender(ctx));
     }
 
     #[test]
+    #[lint_allow(self_transfer)]
     fun test_table_push_front_bench() {
         let ctx = &mut tx_context::dummy();
         let table = new<u64, u256>(ctx);
@@ -448,10 +455,11 @@ module move_stl::linked_table {
             push_front(&mut table, n, (n as u256));
             n = n + 1;
         };
-        transfer(table, tx_context::sender(ctx));
+        transfer::transfer(table, tx_context::sender(ctx));
     }
 
     #[test]
+    #[lint_allow(self_transfer)]
     fun test_table_insert_before_bench() {
         let ctx = &mut tx_context::dummy();
         let table = new<u64, u64>(ctx);
@@ -464,10 +472,11 @@ module move_stl::linked_table {
             current_key = n;
             n = n - 1;
         };
-        transfer(table, tx_context::sender(ctx));
+        transfer::transfer(table, tx_context::sender(ctx));
     }
 
     #[test]
+    #[lint_allow(self_transfer)]
     fun test_table_insert_after_bench() {
         let ctx = &mut tx_context::dummy();
         let table = new<u64, u64>(ctx);
@@ -480,6 +489,6 @@ module move_stl::linked_table {
             current_key = n;
             n = n + 1;
         };
-        transfer(table, tx_context::sender(ctx));
+        transfer::transfer(table, tx_context::sender(ctx));
     }
 }
