@@ -7,3 +7,4 @@
 /sui/.idea
 /sui/build
 /sui/sui.log*
+/sui/Move.lock
