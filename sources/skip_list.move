@@ -11,7 +11,7 @@ module move_stl::skip_list {
     #[allow(unused_const)]
     const ESkipListIsEmpty: u64 = 4;
     const EInvalidListP: u64 = 5;
-
+    const EInvalidMaxLevel: u64 = 6;
     /// The skip list.
     public struct SkipList<phantom V: store> has key, store {
         /// The id of this skip list.
@@ -49,6 +49,7 @@ module move_stl::skip_list {
     /// Create a new empty skip list.
     public fun new<V: store>(max_level: u64, list_p: u64, seed: u64, ctx: &mut TxContext): SkipList<V> {
         assert!(list_p > 1, EInvalidListP);
+        assert!(max_level > 0, EInvalidMaxLevel);
         let list = SkipList<V> {
             id: object::new(ctx),
             head: vector::empty(),
