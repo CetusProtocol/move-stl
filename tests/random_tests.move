@@ -70,7 +70,7 @@ module move_stl::random_tests {
     //         n = n + 1
     //     }
     // }
-    // 
+    //
     // #[test]
     // fun test_rand_bench() {
     //     let mut random = new(0);

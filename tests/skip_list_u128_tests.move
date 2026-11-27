@@ -32,7 +32,7 @@ module move_stl::skip_list_u128_tests {
         let mut random = random::new(seed);
         let mut n = 0;
         while (n < size) {
-            let score = random.rand_n(1000000) as u128; 
+            let score = random.rand_n(1000000) as u128;
             if (list.contains(score)) {
                 continue
             };
@@ -47,6 +47,27 @@ module move_stl::skip_list_u128_tests {
         let ctx = &mut tx_context::dummy();
         let list = new<u256>(16, 2, 12345, ctx);
         list.check_skip_list();
+        transfer::public_transfer(list, tx_context::sender(ctx));
+    }
+
+    #[test]
+    #[expected_failure(abort_code = 5, location = move_stl::skip_list_u128)]
+    fun test_new_max_level_zero() {
+        let ctx = &mut tx_context::dummy();
+        let list = new<u256>(0, 2, 12345, ctx);
+        transfer::public_transfer(list, tx_context::sender(ctx));
+    }
+
+    #[test]
+    fun test_max_level_one_insert_stays_linked() {
+        let ctx = &mut tx_context::dummy();
+        let mut list = new<u256>(1, 2, 0, ctx);
+        list.insert(1, 1001);
+        list.insert(2, 1002);
+        list.insert(3, 1003);
+        list.insert(4, 1004);
+        list.check_skip_list();
+        assert_eq!(list.length(), 4);
         transfer::public_transfer(list, tx_context::sender(ctx));
     }
 
@@ -298,13 +319,13 @@ module move_stl::skip_list_u128_tests {
 
         let opt_score = list.find_prev(1000, true);
         assert_eq!(opt_score.is_none(), true);
-        
+
         let opt_score = list.find_prev(1000, false);
         assert_eq!(opt_score.is_none(), true);
-        
+
         let opt_score = list.find_next(1000, true);
         assert_eq!(opt_score.is_none(), true);
-        
+
         let opt_score = list.find_next(1000, false);
         assert_eq!(opt_score.is_none(), true);
 

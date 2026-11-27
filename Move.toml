@@ -1,9 +1,8 @@
-# mainnet 
+# mainnet
 # ------------------------
 [package]
 name = "MoveSTL"
-version = "1.2.0"
-published-at =  "0x8569b7efebec65c73b9dc15c5ac2a9542870d286fa79a3feedffbaa94ed53002" 
+version = "1.4.0"
 edition = "2024"
 
 [dependencies]
