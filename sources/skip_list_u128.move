@@ -8,6 +8,7 @@ module move_stl::skip_list_u128 {
     const ENodeDoesNotExist: u64 = 1;
     const ESkipListNotEmpty: u64 = 3;
     const EInvalidListP: u64 = 4;
+    const EInvalidMaxLevel: u64 = 5;
 
     /// The skip list.
     public struct SkipList<V: store> has key, store{
@@ -46,6 +47,10 @@ module move_stl::skip_list_u128 {
     /// Create a new empty skip list.
     public fun new<V: store>(max_level: u64, list_p: u64, seed: u64, ctx: &mut TxContext): SkipList<V> {
         assert!(list_p > 1, EInvalidListP);
+        // A zero max level makes rand_level return 0 after the first insert.
+        // The node is then stored without bottom links, so traversal and bitmap
+        // migration can never reach it.
+        assert!(max_level > 0, EInvalidMaxLevel);
         let list = SkipList<V> {
             id: object::new(ctx),
             head: vector::empty(),

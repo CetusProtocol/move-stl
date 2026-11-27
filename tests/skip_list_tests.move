@@ -32,7 +32,7 @@ module move_stl::skip_list_tests {
         let mut random = random::new(seed);
         let mut n = 0;
         while (n < size) {
-            let score = random.rand_n(1000000); 
+            let score = random.rand_n(1000000);
             if (list.contains(score)) {
                 continue
             };
@@ -47,6 +47,27 @@ module move_stl::skip_list_tests {
         let ctx = &mut tx_context::dummy();
         let list = new<u256>(16, 2, 12345, ctx);
         list.check_skip_list();
+        transfer::public_transfer(list, tx_context::sender(ctx));
+    }
+
+    #[test]
+    #[expected_failure(abort_code = 6, location = move_stl::skip_list)]
+    fun test_new_max_level_zero() {
+        let ctx = &mut tx_context::dummy();
+        let list = new<u256>(0, 2, 12345, ctx);
+        transfer::public_transfer(list, tx_context::sender(ctx));
+    }
+
+    #[test]
+    fun test_max_level_one_insert_stays_linked() {
+        let ctx = &mut tx_context::dummy();
+        let mut list = new<u256>(1, 2, 0, ctx);
+        list.insert(1, 1001);
+        list.insert(2, 1002);
+        list.insert(3, 1003);
+        list.insert(4, 1004);
+        list.check_skip_list();
+        assert_eq!(list.length(), 4);
         transfer::public_transfer(list, tx_context::sender(ctx));
     }
 
